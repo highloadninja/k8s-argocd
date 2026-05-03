@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# ArgoCD будет читать именно этот файл и применять все манифесты ниже
+resources:
+  - namespace.yaml
+
+  # PostgreSQL
+  - postgres/secret.yaml
+  - postgres/statefulset.yaml
+  - postgres/service.yaml
+
+  # Redis
+  - redis/deployment.yaml
+  - redis/service.yaml
+
+  # Worker (без Service — не слушает порты)
+  - worker/deployment.yaml
+
+  # Vote App
+  - vote/deployment.yaml
+  - vote/service.yaml
+
+  # Result App
+  - result/deployment.yaml
+  - result/service.yaml
+
+  # Ingress
+  - ingress/ingress.yaml

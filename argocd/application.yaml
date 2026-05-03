@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: voting-app
+  namespace: argocd          # ArgoCD всегда живёт в namespace "argocd"
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/highloadninja/k8s-final-project   # ← замени на свой URL
+    targetRevision: main
+    path: k8s                # ArgoCD найдёт kustomization.yaml здесь
+
+  destination:
+    server: https://kubernetes.default.svc   # текущий кластер
+    namespace: voting
+
+  syncPolicy:
+    automated:
+      prune: true            # удалять ресурсы, которых нет в git
+      selfHeal: true         # откатывать ручные изменения в кластере
+    syncOptions:
+      - CreateNamespace=true # создать namespace voting, если не существует

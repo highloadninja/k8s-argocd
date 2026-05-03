@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: voting-ingress
+  namespace: voting
+  annotations:
+    # Если используешь nginx ingress controller:
+    kubernetes.io/ingress.class: "nginx"
+    # Если используешь Traefik (k3s по умолчанию):
+    # kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+    - host: vote.home
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vote
+                port:
+                  number: 80
+
+    - host: result.home
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: result
+                port:
+                  number: 80

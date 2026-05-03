@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: voting
+spec:
+  replicas: 1               # Worker stateful по природе — 1 реплики достаточно
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: dockersamples/examplevotingapp_worker
+          env:
+            # Worker ищет Redis и DB по этим переменным (или hardcoded DNS)
+            # На всякий случай явно передаём — образ читает их при старте
+            - name: REDIS_HOST
+              value: "redis"
+            - name: DATABASE_HOST
+              value: "db"
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          # Worker не слушает порты — Service не нужен
